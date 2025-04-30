@@ -1,0 +1,4 @@
+# python virtual environment
+
+.venv/
+__init__dib.py
