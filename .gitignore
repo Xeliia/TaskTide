@@ -2,5 +2,5 @@
 
 .venv/
 __init__dib.py
-__pychache__/
+__pycache__/
 flask_session/
