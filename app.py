@@ -5,6 +5,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -28,10 +29,25 @@ def after_request(response):
 
 @app.route("/")
 @login_required
-def index():
-    """Homepage"""
-    
-    return render_template("index.html")
+def dashboard():
+    username = session.get("username")
+    now = datetime.now()
+    hour = now.hour
+
+    if hour < 12:
+        greeting = "Good Morning"
+        subtext = "Let's Make Today A Productive Day"
+    elif hour < 18:
+        greeting = "Good Afternoon"
+        subtext = "Remember To Take A Break From Time To Time"
+    else:
+        greeting = "Good Evening"
+        subtext = "You Should Hit The Hay Soon And Get A Good Night's Rest"
+
+    todos = [...]
+    notes = [...]
+
+    return render_template("dashboard.html", dashboard=True, username=username, greeting=greeting, subtext=subtext, todos=todos, notes=notes)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -45,22 +61,25 @@ def buy():
 def login():
     session.clear()
     if request.method == "POST":
-        if not request.form.get("username"):
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if not username:
             flash("Username is required", "danger")
-            return redirect("/login")
-        if not request.form.get("password"):
+            return render_template("login.html")
+        if not password:
             flash("Please Provide the Password", "danger")
-            return redirect("/login")
+            return render_template("login.html")
 
         conn = get_db_connection()
-        rows = conn.execute("SELECT * FROM users where username = ?", request.form.get("username"))
-        if len(rows) != 1 or not check_password_hash (
-            rows[0]["password"], request.form.get("password")
-        ):
-            flash("Invalid Username or Password", "danger")
-            return redirect("/login")
+        row = conn.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),)).fetchone()
 
-        session["user_id"] = rows[0]["id"]
+        if row is None or not check_password_hash(row["password"], password):
+            flash("Invalid Username or Password", "danger")
+            return render_template("login.html")
+
+        session["user_id"] = row["id"]
+        session["username"] = row["username"]
         return redirect("/")
     else:
         return render_template("login.html")
@@ -68,10 +87,8 @@ def login():
 
 @app.route("/logout")
 def logout():
-    # Forget any user_id
     session.clear()
 
-    # Redirect user to login form
     return redirect("/")
 
 
@@ -97,11 +114,12 @@ def register():
         connection = get_db_connection()
         cursor = connection.cursor()
         
-        user = cursor.execute("SELECT * FROM users WHERE username = ?", username)
+        user = cursor.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+
         if user:
             flash("Username already exists", "danger")
             return redirect("/register")
-        
+
         hash_pass = generate_password_hash(password)
         
         filename = "placeholder.png"
@@ -110,8 +128,8 @@ def register():
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             profile_pic.save(filepath)
 
-        cursor.execute("INSER INTO users (username, hash, profile_pic) VALUES (?, ?, ?)", username, hash_pass, filename)
-        
+        cursor.execute("INSERT INTO users (username, password, profile_picture) VALUES (?, ?, ?)", (username, hash_pass, filename))
+
         connection.commit()
         connection.close()
 

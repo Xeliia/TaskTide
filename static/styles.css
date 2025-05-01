@@ -1,0 +1,88 @@
+
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+nav .navbar-brand .blue
+{
+    color: #537fbe;
+}
+nav .navbar-brand .red
+{
+    color: #ea433b;
+}
+nav .navbar-brand .yellow
+{
+    color: #f5b82e;
+}
+nav .navbar-brand .green
+{
+    color: #2e944b;
+}
+
+
+/* Dashboard */
+body.no-scroll {
+    overflow: hidden;
+    height: 100vh;
+  }
+  
+
+.dashboard-grid {
+    display: grid;
+    grid-template-areas:
+        "todo       center     calendar"
+        "notes      center     pomodoro";
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    padding: 2rem;
+    min-height: 80vh;
+}
+
+.top-left       { grid-area: todo; }
+.top-right      { grid-area: calendar; }
+.bottom-left    { grid-area: notes; }
+.bottom-right   { grid-area: pomodoro; }
+.center         { 
+    grid-area: center; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-grid > div {
+    background-color: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.dashboard-grid > div:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #333;
+    margin-bottom: 1rem;
+}
+
+.greeting h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.greeting p {
+    font-size: 0.9rem;
+    color: #555;
+}

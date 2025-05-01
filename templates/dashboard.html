@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block main %}
+<div class="dashboard-grid">
+    <div class="top-left"><a href="/todo">To-Do</a></div>
+    <div class="top-right"><a href="/calendar">Calendar</a></div>
+    <div class="center">
+        <img src="{{ url_for('static', filename='uploads/placeholder.jpg') }}" class="profile-pic">
+        <div class="greeting">
+            <h2>{{ greeting }}, {{ username }}</h2>
+            <p>{{ subtext }}</p>
+        </div>
+    </div>
+    <div class="bottom-left"><a href="/note">Notes</a></div>
+    <div class="bottom-right"><a href="/pomodoro">Pomodoro</a></div>
+</div>
+{% endblock %}
