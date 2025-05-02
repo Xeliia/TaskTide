@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Notes
+{% endblock %}
+
+{% block main %}
+<div id="notes-area">
+  <div class="notes-container">
+    <aside class="notes-sidebar">
+      <span>Notes</span>
+      <i class="bx bx-plus" id="add-note-btn"></i>
+      <i class='bx bxs-trash'></i>
+      <ul class="notes-list">
+        {% for note_id, note in notes.items() %}
+          <li class="note-item {% if note_id == selected_id %}active{% endif %}" data-note-id="{{ note_id }}">
+            {{ note.title or 'Untitled Note' }}
+          </li>
+        {% endfor %}
+      </ul>
+    </aside>
+    <section class="note-editor">
+      {% if not notes %}
+        <div id="add-note-message" class="add-note-message" onclick="createNewNote()">
+          <span>Click here to Add a Note</span>
+        </div>
+      {% else %}
+        <input
+          id="note-title"
+          type="text"
+          value="{{ selected_note.title }}"
+          data-note-id="{{ selected_note.id }}"
+          class="note-title-input"
+          placeholder="Untitled Note"
+          onblur="renameNote(event)"
+          onkeypress="checkEnter(event)"
+        />
+        <textarea id="note-content" data-note-id="{{ selected_note.id }}" onblur="saveContent(event)">
+          {{ selected_note.content }}
+        </textarea>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

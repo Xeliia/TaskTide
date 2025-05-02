@@ -1,7 +1,8 @@
 import os
 import sqlite3 as sql
+from uuid import uuid4
 
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required
@@ -13,6 +14,8 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 Session(app)
+
+notes_data = {}
 
 def get_db_connection():
     connection = sql.connect('data.db')
@@ -45,16 +48,9 @@ def dashboard():
         subtext = "You Should Hit The Hay Soon And Get A Good Night's Rest"
 
     todos = [...]
-    notes = [...]
+    note = [...]
 
-    return render_template("dashboard.html", dashboard=True, username=username, greeting=greeting, subtext=subtext, todos=todos, notes=notes)
-
-
-@app.route("/buy", methods=["GET", "POST"])
-@login_required
-def buy():
-
-    return render_template("buy.html")
+    return render_template("dashboard.html", dashboard=True, username=username, greeting=greeting, subtext=subtext, todos=todos, note=note)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -90,14 +86,6 @@ def logout():
     session.clear()
 
     return redirect("/")
-
-
-@app.route("/quote", methods=["GET", "POST"])
-@login_required
-def quote():
-    """Get stock quote."""
-
-    return render_template("quote.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -139,15 +127,123 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/sell", methods=["GET", "POST"])
-@login_required
-def sell():
-
-    return render_template("sell.html")
-
-
 @app.route("/change-password", methods=["GET", "POST"])
 @login_required
 def change_password():
 
     return render_template("change-password.html")
+
+@app.route("/todo", methods=["GET", "POST"])
+@login_required
+def todo():
+
+    return render_template("todo.html", todo=True)
+
+@app.route("/calendar", methods=["GET", "POST"])
+@login_required
+def calendar():
+
+    return render_template("calendar.html", calendar=True)
+
+@app.route("/pomodoro", methods=["GET", "POST"])
+@login_required
+def pomodoro():
+
+    return render_template("pomodoro.html", pomodoro=True)
+
+@app.route("/settings", methods=["GET", "POST"])
+@login_required
+def settings():
+
+    return render_template("settings.html", settings=True)
+
+@app.route('/notes', methods=['GET', 'POST'])
+def notes():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect('/login')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        today = datetime.today()
+        title = "New Note"
+        cur.execute("INSERT INTO notes (user_id, note_date, title, content) VALUES (?, ?, ?, ?)", 
+                    (user_id, today, title, ""))
+        conn.commit()
+        note_id = cur.lastrowid
+        conn.close()
+        return jsonify({'id': note_id}), 201
+
+    selected_id = request.args.get('selected')
+    cur.execute("SELECT id, note_date, title, content FROM notes WHERE user_id = ?", (user_id,))
+    notes = cur.fetchall()
+
+    selected_note = None
+    if selected_id:
+        cur.execute("SELECT * FROM notes WHERE id = ? AND user_id = ?", (selected_id, user_id))
+        selected_note = cur.fetchone()
+
+    conn.close()
+
+    # Use actual title from DB
+    notes_dict = {
+        str(note['id']): {
+            'id': note['id'],
+            'title': note['title'] or f"Note {note['id']}",
+            'content': note['content']
+        } for note in notes
+    }
+
+    return render_template("notes.html", notes=notes_dict, selected_id=selected_id, selected_note=selected_note)
+
+
+@app.route('/notes/rename', methods=['POST'])
+def rename_note():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect('/login')
+
+    # Get data from the request
+    data = request.get_json()
+    note_id = data.get('note_id')
+    new_title = data.get('title')
+
+    # Validate input
+    if not note_id or not new_title:
+        return jsonify({'success': False, 'message': 'Note ID and title are required.'})
+
+    # Update note in the database
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE notes SET title = ? WHERE id = ? AND user_id = ?", (new_title, note_id, user_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'success': True})
+
+@app.route('/notes/save-content', methods=['POST'])
+def save_content():
+    user_id = session.get('user_id')
+    data = request.get_json()
+    note_id = data.get('note_id')
+    content = data.get('content')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE notes SET content = ? WHERE id = ? AND user_id = ?", (content, note_id, user_id))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
+@app.route('/notes/<int:note_id>', methods=['DELETE'])
+def delete_note(note_id):
+    user_id = session.get('user_id')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM notes WHERE id = ? AND user_id = ?", (note_id, user_id))
+    conn.commit()
+    conn.close()
+    return '', 204
