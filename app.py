@@ -133,11 +133,40 @@ def change_password():
 
     return render_template("change-password.html")
 
-@app.route("/todo", methods=["GET", "POST"])
-@login_required
+@app.route('/todo', methods=['GET', 'POST'])
 def todo():
+    user_id = session.get('user_id')
+    conn = get_db_connection()
 
-    return render_template("todo.html", current_page="todo")
+    if request.method == 'POST':
+        task = request.form.get('task')
+        if task:
+            conn.execute('INSERT INTO todos (user_id, task) VALUES (?, ?)', (user_id, task))
+            conn.commit()
+            conn.close()
+            return redirect('/todo')
+
+    todos = conn.execute('SELECT * FROM todos WHERE user_id = ? ORDER BY id DESC', (user_id,)).fetchall()
+    conn.close()
+    return render_template('todo.html', todos=todos, current_page="todo")
+    
+@app.route('/todo/delete/<int:todo_id>')
+def delete_todo(todo_id):
+    user_id = session.get('user_id')
+    conn = get_db_connection()
+    conn.execute('DELETE FROM todos WHERE id = ? AND user_id = ?', (todo_id, user_id))
+    conn.commit()
+    conn.close()
+    return redirect('/todo')
+
+@app.route('/todo/toggle/<int:todo_id>')
+def toggle_complete(todo_id):
+    user_id = session.get('user_id')
+    conn = get_db_connection()
+    conn.execute('UPDATE todos SET completed = NOT completed WHERE id = ? AND user_id = ?', (todo_id, user_id))
+    conn.commit()
+    conn.close()
+    return redirect('/todo')
 
 @app.route("/calendar", methods=["GET", "POST"])
 @login_required
@@ -187,7 +216,6 @@ def notes():
 
     conn.close()
 
-    # Use actual title from DB
     notes_dict = {
         str(note['id']): {
             'id': note['id'],
@@ -197,7 +225,6 @@ def notes():
     }
 
     return render_template("notes.html", current_page="notes", notes=notes_dict, selected_id=selected_id, selected_note=selected_note)
-
 
 @app.route('/notes/rename', methods=['POST'])
 def rename_note():

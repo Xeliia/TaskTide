@@ -1,9 +1,51 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Todo
+  To do lists
 {% endblock %}
 
 {% block main %}
+
+<body class="todo-body">
+  <div class="text-center mb-3">
+    <button class="btn btn-success" id="addTaskBtn" data-bs-toggle="modal" data-bs-target="#newTaskModal">+ Add New Task</button>
+  </div>
+
+  <div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newTaskModalLabel">Add New Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url_for('todo') }}" method="POST">
+          <div class="modal-body">
+            <textarea name="task" class="form-control" placeholder="Enter your task..." required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="tasks">
+    {% for todo in todos %}
+      <div class="task-card card mb-3 {% if todo['completed'] %}completed{% endif %}" id="task-{{ todo['id'] }}">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <form action="{{ url_for('toggle_complete', todo_id=todo['id']) }}" method="get" class="d-flex align-items-center">
+            <input type="checkbox" onchange="this.form.submit()" {% if todo['completed'] %}checked{% endif %} class="form-check-input me-2">
+            <span class="task-text {% if todo['completed'] %}text-decoration-line-through text-muted{% endif %}">
+              {{ todo['task'] }}
+            </span>
+          </form>
+          <a class="btn btn-danger btn-sm" href="{{ url_for('delete_todo', todo_id=todo['id']) }}">✕</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</body>
 
 {% endblock %}
