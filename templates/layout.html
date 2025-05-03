@@ -77,34 +77,26 @@
                 <i class='bx bx-menu' ></i>
                 <ul class="breadcrumb"></ul>
                     <li>
-                        {% if dashboard %}
+                        {% if current_page == "dashboard" %}
                             <span><strong>Dashboard</strong></span>
                         {% else %}
                             <a href="/" class="link"><strong>Dashboard</strong></a>
                         {% endif %}
                     </li>
-                    {% if note or todo or calendar or pomodoro or settings %}
+                    {% if current_page != "dashboard" %}
                         <li><i class='bx bx-chevron-right'></i></li>
-                    {% endif %}
-                    {% if note %}
                         <li>
+                            {% if current_page == "notes" %}
                             <span><strong>Notes</strong></span>
-                        </li>
-                    {% elif todo %}
-                        <li>
+                            {% elif current_page == "todo" %}
                             <span><strong>To Do Lists</strong></span>
-                        </li>
-                    {% elif calendar %}
-                        <li>
+                            {% elif current_page == "calendar" %}
                             <span><strong>Calendar</strong></span>
-                        </li>
-                    {% elif pomodoro %}
-                        <li>
+                            {% elif current_page == "pomodoro" %}
                             <span><strong>Pomodoro</strong></span>
-                        </li>
-                    {% elif settings %}
-                        <li>
+                            {% elif current_page == "settings" %}
                             <span><strong>Settings</strong></span>
+                            {% endif %}
                         </li>
                     {% endif %}
                     </ul>

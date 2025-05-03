@@ -50,7 +50,7 @@ def dashboard():
     todos = [...]
     note = [...]
 
-    return render_template("dashboard.html", dashboard=True, username=username, greeting=greeting, subtext=subtext, todos=todos, note=note)
+    return render_template("dashboard.html", username=username, greeting=greeting, subtext=subtext, todos=todos, note=note, current_page="dashboard")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -137,25 +137,25 @@ def change_password():
 @login_required
 def todo():
 
-    return render_template("todo.html", todo=True)
+    return render_template("todo.html", current_page="todo")
 
 @app.route("/calendar", methods=["GET", "POST"])
 @login_required
 def calendar():
 
-    return render_template("calendar.html", calendar=True)
+    return render_template("calendar.html", current_page="calendar")
 
 @app.route("/pomodoro", methods=["GET", "POST"])
 @login_required
 def pomodoro():
 
-    return render_template("pomodoro.html", pomodoro=True)
+    return render_template("pomodoro.html", current_page="pomodoro")
 
 @app.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings():
 
-    return render_template("settings.html", settings=True)
+    return render_template("settings.html", current_page="settings")
 
 @app.route('/notes', methods=['GET', 'POST'])
 def notes():
@@ -196,7 +196,7 @@ def notes():
         } for note in notes
     }
 
-    return render_template("notes.html", notes=notes_dict, selected_id=selected_id, selected_note=selected_note)
+    return render_template("notes.html", current_page="notes", notes=notes_dict, selected_id=selected_id, selected_note=selected_note)
 
 
 @app.route('/notes/rename', methods=['POST'])
