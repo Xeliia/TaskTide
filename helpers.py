@@ -1,6 +1,6 @@
-import requests
+import sqlite3 as sql
 
-from flask import redirect, render_template, session
+from flask import redirect, session
 from functools import wraps
 
 
@@ -18,3 +18,8 @@ def login_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+def get_db_connection():
+    connection = sql.connect('data.db')
+    connection.row_factory = sql.Row
+    return connection

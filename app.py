@@ -1,12 +1,10 @@
 import os
-import sqlite3 as sql
-from uuid import uuid4
 
+from datetime import datetime
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_required
-from datetime import datetime
+from helpers import get_db_connection, login_required
 
 app = Flask(__name__)
 
@@ -16,11 +14,6 @@ app.config["UPLOAD_FOLDER"] = "static/uploads"
 Session(app)
 
 notes_data = {}
-
-def get_db_connection():
-    connection = sql.connect('data.db')
-    connection.row_factory = sql.Row
-    return connection
 
 @app.after_request
 def after_request(response):
@@ -167,12 +160,6 @@ def toggle_complete(todo_id):
     conn.commit()
     conn.close()
     return redirect('/todo')
-
-@app.route("/calendar", methods=["GET", "POST"])
-@login_required
-def calendar():
-
-    return render_template("calendar.html", current_page="calendar")
 
 @app.route("/pomodoro", methods=["GET", "POST"])
 @login_required
