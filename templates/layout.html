@@ -94,20 +94,22 @@
                         {% endif %}
                     </li>
                     {% if current_page != "dashboard" %}
-                        <li><i class='bx bx-chevron-right'></i></li>
                         <li>
                             {% if current_page == "notes" %}
+                            <li><i class='bx bx-chevron-right'></i></li>
                             <span><strong>Notes</strong></span>
                             {% elif current_page == "todo" %}
+                            <li><i class='bx bx-chevron-right'></i></li>
                             <span><strong>To Do Lists</strong></span>
                             {% elif current_page == "pomodoro" %}
+                            <li><i class='bx bx-chevron-right'></i></li>
                             <span><strong>Pomodoro</strong></span>
                             {% elif current_page == "settings" %}
+                            <li><i class='bx bx-chevron-right'></i></li>
                             <span><strong>Settings</strong></span>
                             {% endif %}
                         </li>
                     {% endif %}
-                    </ul>
                 </nav>
             </section>
         {% endif %}

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Inter:400,600,700&display=swap');
 
 * {
 	margin: 0;
@@ -635,4 +636,55 @@ textarea:focus, .form-control:focus {
   
 .btn-close {
 	color: #007bff;
+}
+
+
+/* pomodoro */
+#pomodoro-timer {
+  letter-spacing: 2px;
+  font-weight: bold;
+  color: #e74c3c;
+  text-shadow: 1px 1px 8px #f8c291;
+}
+
+#pomodoro-status {
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+body.pomodoro-running {
+  background-color: #e6ffe6 !important;
+  transition: background 0.5s;
+}
+body.pomodoro-paused {
+  background-color: #fffbe6 !important;
+  transition: background 0.5s;
+}
+body.pomodoro-alarm {
+  background-color: #ffe6e6 !important;
+  transition: background 0.5s;
+}
+
+.card {
+  border-radius: 12px;
+}
+.display-6 {
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+.list-group-item {
+  font-size: 1.1rem;
+}
+
+.pomodoro-card-running {
+  background: #e6ffe6 !important;
+  transition: background 0.5s;
+}
+.pomodoro-card-paused {
+  background: #fffbe6 !important;
+  transition: background 0.5s;
+}
+.pomodoro-card-alarm {
+  background: #ffe6e6 !important;
+  transition: background 0.5s;
 }

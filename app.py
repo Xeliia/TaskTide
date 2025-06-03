@@ -1,4 +1,5 @@
 import os
+import random
 
 from datetime import datetime
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
@@ -26,10 +27,13 @@ def after_request(response):
 @app.route("/")
 @login_required
 def dashboard():
+    user_id = session.get("user_id")
     username = session.get("username")
+
+    # Greeting logic
+    from datetime import datetime
     now = datetime.now()
     hour = now.hour
-
     if hour < 12:
         greeting = "Good Morning"
         subtext = "Let's Make Today A Productive Day"
@@ -40,10 +44,31 @@ def dashboard():
         greeting = "Good Evening"
         subtext = "You Should Hit The Hay Soon And Get A Good Night's Rest"
 
-    todos = [...]
-    note = [...]
+    conn = get_db_connection()
+    user = conn.execute("SELECT profile_picture FROM users WHERE id = ?", (user_id,)).fetchone()
+    profile_picture = user["profile_picture"] if user else "placeholder.png"
 
-    return render_template("dashboard.html", username=username, greeting=greeting, subtext=subtext, todos=todos, note=note, current_page="dashboard")
+    # Notes and To-Do
+    notes = conn.execute("SELECT * FROM notes WHERE user_id = ?", (user_id,)).fetchall()
+    random_note = random.choice(notes) if notes else None
+    notes_count = len(notes)
+
+    todos = conn.execute("SELECT * FROM todos WHERE user_id = ?", (user_id,)).fetchall()
+    todos_count = len(todos)
+
+    conn.close()
+
+    return render_template(
+        "dashboard.html",
+        username=username,
+        greeting=greeting,
+        subtext=subtext,
+        profile_picture=profile_picture,
+        notes_count=notes_count,
+        todos_count=todos_count,
+        todos=todos,
+        random_note=random_note
+    )
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -164,14 +189,7 @@ def toggle_complete(todo_id):
 @app.route("/pomodoro", methods=["GET", "POST"])
 @login_required
 def pomodoro():
-
     return render_template("pomodoro.html", current_page="pomodoro")
-
-@app.route("/settings", methods=["GET", "POST"])
-@login_required
-def settings():
-
-    return render_template("settings.html", current_page="settings")
 
 @app.route('/notes', methods=['GET', 'POST'])
 def notes():
@@ -261,3 +279,9 @@ def delete_note(note_id):
     conn.commit()
     conn.close()
     return '', 204
+
+@app.route("/settings", methods=["GET", "POST"])
+@login_required
+def settings():
+
+    return render_template("settings.html", current_page="settings")

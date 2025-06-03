@@ -5,112 +5,160 @@
 {% endblock %}
 
 {% block main %}
+<div class="container-fluid py-4" style="max-width: 1200px;">
 
-<ul class="box-info">
-    <li>
-        <i class='bx bxs-calendar-check' ></i>
-        <span class="text">
-            <h3>1020</h3>
-            <p>New Order</p>
-        </span>
-    </li>
-    <li>
-        <i class='bx bxs-group' ></i>
-        <span class="text">
-            <h3>2834</h3>
-            <p>Visitors</p>
-        </span>
-    </li>
-</ul>
-
-
-<div class="table-data">
-    <div class="order">
-        <div class="head">
-            <h3>Recent Orders</h3>
-            <i class='bx bx-search' ></i>
-            <i class='bx bx-filter' ></i>
+    <!-- Profile Card Section -->
+    <div style="
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px #0001;
+        padding: 2rem 2rem 1.5rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 2rem;
+    ">
+        <div class="d-flex align-items-center" style="gap: 1.5rem;">
+            <img src="{{ url_for('static', filename='uploads/' ~ profile_picture) }}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+            <div>
+                <div class="fw-semibold" style="font-size:1.1rem;">Welcome Back</div>
+                <div style="font-size:2rem; font-weight:700; color:#1976d2;">{{ username }}!</div>
+                <div class="text-muted" style="font-size:1rem;">{{ greeting }}, {{ subtext }}</div>
+            </div>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Date Order</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <img src="img/people.png">
-                        <p>John Doe</p>
-                    </td>
-                    <td>01-10-2021</td>
-                    <td><span class="status completed">Completed</span></td>
-                </tr>
-                <tr>
-                    <td>
-                        <img src="img/people.png">
-                        <p>John Doe</p>
-                    </td>
-                    <td>01-10-2021</td>
-                    <td><span class="status pending">Pending</span></td>
-                </tr>
-                <tr>
-                    <td>
-                        <img src="img/people.png">
-                        <p>John Doe</p>
-                    </td>
-                    <td>01-10-2021</td>
-                    <td><span class="status process">Process</span></td>
-                </tr>
-                <tr>
-                    <td>
-                        <img src="img/people.png">
-                        <p>John Doe</p>
-                    </td>
-                    <td>01-10-2021</td>
-                    <td><span class="status pending">Pending</span></td>
-                </tr>
-                <tr>
-                    <td>
-                        <img src="img/people.png">
-                        <p>John Doe</p>
-                    </td>
-                    <td>01-10-2021</td>
-                    <td><span class="status completed">Completed</span></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="d-flex" style="gap: 2rem;">
+            <div class="text-center">
+                <div style="font-size:1.1rem; color:#1565c0;">Notes</div>
+                <div style="font-size:2rem; font-weight:600;">{{ notes_count }}</div>
+            </div>
+            <div class="text-center">
+                <div style="font-size:1.1rem; color:#218838;">To-Do</div>
+                <div style="font-size:2rem; font-weight:600;">{{ todos_count }}</div>
+            </div>
+        </div>
     </div>
-    <div class="todo">
-        <div class="head">
-            <h3>Todos</h3>
-            <i class='bx bx-plus' ></i>
-            <i class='bx bx-filter' ></i>
+
+    <!-- Pomodoro Timer Card -->
+    <div id="dashboard-pomodoro-card" class="mb-4" style="background:#f6f6f6; border-radius:18px; padding:2rem 1.5rem; display:flex; flex-direction:column; align-items:center;">
+        <div id="dashboard-pomodoro-timer" style="font-size:2.5rem; font-weight:600;">--:--</div>
+        <div id="dashboard-pomodoro-status" style="font-size:1.1rem; color:#888;">No session running</div>
+    </div>
+
+    <!-- Notes and To-Do Side by Side -->
+    <div class="row" style="gap:0;">
+        <!-- Note Section -->
+        <div class="col-md-8 mb-4" style="flex: 0 0 66.666%; max-width: 66.666%;">
+            <div style="background:#fff; border-radius:12px; padding:2rem 1.5rem; height:320px; box-shadow:0 1px 4px #0001; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column;">
+                {% if random_note %}
+                    <div style="text-align:center; font-size:1.4rem; font-weight:700;">
+                        {{ random_note.title or "Untitled Note" }}
+                    </div>
+                    <div style="
+                        font-size:1.05rem;
+                        color:#222;
+                        text-align:left;
+                        white-space:pre-line;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 8;
+                        line-clamp: 8;
+                        -webkit-box-orient: vertical;
+                        word-break:break-word;
+                    ">
+                        {{ random_note.content or "" }}
+                    </div>
+                {% else %}
+                    <div style="text-align:center; font-size:1.2rem; color:#888;">No notes yet.</div>
+                {% endif %}
+            </div>
         </div>
-        <ul class="todo-list">
-            <li class="completed">
-                <p>Todo List</p>
-                <i class='bx bx-dots-vertical-rounded' ></i>
-            </li>
-            <li class="completed">
-                <p>Todo List</p>
-                <i class='bx bx-dots-vertical-rounded' ></i>
-            </li>
-            <li class="not-completed">
-                <p>Todo List</p>
-                <i class='bx bx-dots-vertical-rounded' ></i>
-            </li>
-            <li class="completed">
-                <p>Todo List</p>
-                <i class='bx bx-dots-vertical-rounded' ></i>
-            </li>
-            <li class="not-completed">
-                <p>Todo List</p>
-                <i class='bx bx-dots-vertical-rounded' ></i>
-            </li>
-        </ul>
+        <!-- To-Do Section -->
+        <div class="col-md-4 mb-4" style="flex: 0 0 33.333%; max-width: 33.333%;">
+            <div style="background:#fff; border-radius:12px; padding:2rem 1.5rem; height:320px; box-shadow:0 1px 4px #0001; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column;">
+                <div style="font-size:1.15rem; font-weight:600; margin-bottom:1rem; text-align:center;">To-Do</div>
+                <ul class="list-group list-group-flush" style="flex: 1 1 auto; overflow-y:auto;">
+                    {% set active_todos = todos | selectattr('completed', 'equalto', 0) | list %}
+                    {% if active_todos|length == 0 %}
+                        <li class="list-group-item text-muted" style="background:transparent; text-align:center;">Currently no to-do.</li>
+                    {% else %}
+                        {% for todo in active_todos %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center"
+                                style="background:transparent; border:0; border-bottom:1px solid #eee; overflow:hidden;">
+                                <span style="
+                                    display: block;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    max-width: 100%;
+                                    word-break:break-word;
+                                " title="{{ todo.task }}">
+                                    {{ todo.task }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const timerDiv = document.getElementById('dashboard-pomodoro-timer');
+  const statusDiv = document.getElementById('dashboard-pomodoro-status');
+  const cardDiv = document.getElementById('dashboard-pomodoro-card');
+
+  function setCardState(state) {
+    if (!cardDiv) return;
+    cardDiv.classList.remove('pomodoro-card-running', 'pomodoro-card-paused', 'pomodoro-card-alarm');
+    if (state) cardDiv.classList.add(state);
+  }
+
+  function updatePomodoroWidget() {
+    const pomodoroState = localStorage.getItem('pomodoroState');
+    if (pomodoroState && timerDiv && statusDiv) {
+      const state = JSON.parse(pomodoroState);
+      let timeLeft = state.timeLeft;
+      let isWork = state.isWork;
+      let endTime = state.endTime;
+      if (endTime) {
+        timeLeft = Math.max(0, Math.round((endTime - Date.now()) / 1000));
+      }
+      if (endTime && timeLeft > 0) {
+        const min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const sec = String(timeLeft % 60).padStart(2, '0');
+        timerDiv.textContent = `${min}:${sec}`;
+        statusDiv.textContent = isWork ? "Work session running" : "Break running";
+        setCardState('pomodoro-card-running');
+      } else if (!endTime && timeLeft > 0) {
+        // Paused
+        const min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const sec = String(timeLeft % 60).padStart(2, '0');
+        timerDiv.textContent = `${min}:${sec}`;
+        statusDiv.textContent = isWork ? "Work session paused" : "Break paused";
+        setCardState('pomodoro-card-paused');
+      } else if (timeLeft === 0) {
+        timerDiv.textContent = "--:--";
+        statusDiv.textContent = "Session finished!";
+        setCardState('pomodoro-card-alarm');
+      } else {
+        timerDiv.textContent = "--:--";
+        statusDiv.textContent = "No session running";
+        setCardState();
+      }
+    } else {
+      timerDiv.textContent = "--:--";
+      statusDiv.textContent = "No session running";
+      setCardState();
+    }
+  }
+
+  updatePomodoroWidget();
+  setInterval(updatePomodoroWidget, 1000);
+});
+</script>
 {% endblock %}
