@@ -4,3 +4,4 @@
 __init__dib.py
 __pycache__/
 flask_session/
+table_nodifier.py
