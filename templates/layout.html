@@ -84,11 +84,13 @@
 
         <section id="content">
             <nav>
-                <i class='bx bx-menu' ></i>
-                <ul class="breadcrumb"></ul>
+                <i class='bx bx-menu'></i>
+                <ul class="breadcrumb align-items-center" style="margin-bottom:0;">
                     <li>
                         {% if current_page == "dashboard" %}
                             <span><strong>Dashboard</strong></span>
+                        {% elif current_page == "settings" %}
+                            <span><strong>Settings</strong></span>
                         {% else %}
                             <a href="/" class="link"><strong>Dashboard</strong></a>
                         {% endif %}
@@ -96,22 +98,20 @@
                     {% if current_page != "dashboard" %}
                         <li>
                             {% if current_page == "notes" %}
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <span><strong>Notes</strong></span>
+                                <li><i class='bx bx-chevron-right'></i></li>
+                                <span><strong>Notes</strong></span>
                             {% elif current_page == "todo" %}
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <span><strong>To Do Lists</strong></span>
+                                <li><i class='bx bx-chevron-right'></i></li>
+                                <span><strong>To Do Lists</strong></span>
                             {% elif current_page == "pomodoro" %}
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <span><strong>Pomodoro</strong></span>
-                            {% elif current_page == "settings" %}
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <span><strong>Settings</strong></span>
+                                <li><i class='bx bx-chevron-right'></i></li>
+                                <span><strong>Pomodoro</strong></span>
                             {% endif %}
                         </li>
                     {% endif %}
-                </nav>
-            </section>
+                </ul>
+            </nav>
+        </section>
         {% endif %}
         
         {% if get_flashed_messages() %}

@@ -144,13 +144,6 @@ def register():
 
     return render_template("register.html")
 
-
-@app.route("/change-password", methods=["GET", "POST"])
-@login_required
-def change_password():
-
-    return render_template("change-password.html")
-
 @app.route('/todo', methods=['GET', 'POST'])
 def todo():
     user_id = session.get('user_id')
@@ -237,16 +230,13 @@ def rename_note():
     if not user_id:
         return redirect('/login')
 
-    # Get data from the request
     data = request.get_json()
     note_id = data.get('note_id')
     new_title = data.get('title')
 
-    # Validate input
     if not note_id or not new_title:
         return jsonify({'success': False, 'message': 'Note ID and title are required.'})
 
-    # Update note in the database
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("UPDATE notes SET title = ? WHERE id = ? AND user_id = ?", (new_title, note_id, user_id))
@@ -283,5 +273,65 @@ def delete_note(note_id):
 @app.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings():
+    user_id = session.get("user_id")
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-    return render_template("settings.html", current_page="settings")
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+        profile_pic = request.files.get("profile_pic")
+
+        if username and username != session["username"]:
+            existing = cur.execute("SELECT id FROM users WHERE username = ? AND id != ?", (username, user_id)).fetchone()
+            if existing:
+                flash("Username already taken.", "danger")
+                conn.close()
+                return redirect("/settings")
+            cur.execute("UPDATE users SET username = ? WHERE id = ?", (username, user_id))
+            session["username"] = username
+
+        if password:
+            if password != confirmation:
+                flash("Passwords do not match.", "danger")
+                conn.close()
+                return redirect("/settings")
+            hash_pass = generate_password_hash(password)
+            cur.execute("UPDATE users SET password = ? WHERE id = ?", (hash_pass, user_id))
+
+        if profile_pic and profile_pic.filename != "":
+            filename = f"{username}_{profile_pic.filename}"
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            profile_pic.save(filepath)
+            cur.execute("UPDATE users SET profile_picture = ? WHERE id = ?", (filename, user_id))
+
+        conn.commit()
+        conn.close()
+        flash("Settings updated!", "success")
+        return redirect("/settings")
+
+    user = conn.execute("SELECT profile_picture FROM users WHERE id = ?", (user_id,)).fetchone()
+    conn.close()
+    return render_template("settings.html", profile_picture=user["profile_picture"] if user else "placeholder.png", current_page="settings")
+
+@app.route("/delete-account", methods=["POST"])
+@login_required
+def delete_account():
+    user_id = session.get("user_id")
+    password = request.form.get("delete_password")
+    conn = get_db_connection()
+    cur = conn.cursor()
+    user = cur.execute("SELECT password FROM users WHERE id = ?", (user_id,)).fetchone()
+    if not user or not check_password_hash(user["password"], password):
+        flash("Incorrect password. Account not deleted.", "danger")
+        conn.close()
+        return redirect("/settings")
+    cur.execute("DELETE FROM notes WHERE user_id = ?", (user_id,))
+    cur.execute("DELETE FROM todos WHERE user_id = ?", (user_id,))
+    cur.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    session.clear()
+    flash("Account deleted.", "info")
+    return redirect("/login")

@@ -6,8 +6,6 @@
 
 {% block main %}
 <div class="container-fluid py-4" style="max-width: 1200px;">
-
-    <!-- Profile Card Section -->
     <div style="
         background: #fff;
         border-radius: 16px;
@@ -40,15 +38,12 @@
         </div>
     </div>
 
-    <!-- Pomodoro Timer Card -->
     <div id="dashboard-pomodoro-card" class="mb-4" style="background:#f6f6f6; border-radius:18px; padding:2rem 1.5rem; display:flex; flex-direction:column; align-items:center;">
         <div id="dashboard-pomodoro-timer" style="font-size:2.5rem; font-weight:600;">--:--</div>
         <div id="dashboard-pomodoro-status" style="font-size:1.1rem; color:#888;">No session running</div>
     </div>
 
-    <!-- Notes and To-Do Side by Side -->
     <div class="row" style="gap:0;">
-        <!-- Note Section -->
         <div class="col-md-8 mb-4" style="flex: 0 0 66.666%; max-width: 66.666%;">
             <div style="background:#fff; border-radius:12px; padding:2rem 1.5rem; height:320px; box-shadow:0 1px 4px #0001; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column;">
                 {% if random_note %}
@@ -75,7 +70,6 @@
                 {% endif %}
             </div>
         </div>
-        <!-- To-Do Section -->
         <div class="col-md-4 mb-4" style="flex: 0 0 33.333%; max-width: 33.333%;">
             <div style="background:#fff; border-radius:12px; padding:2rem 1.5rem; height:320px; box-shadow:0 1px 4px #0001; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column;">
                 <div style="font-size:1.15rem; font-weight:600; margin-bottom:1rem; text-align:center;">To-Do</div>
@@ -135,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
         statusDiv.textContent = isWork ? "Work session running" : "Break running";
         setCardState('pomodoro-card-running');
       } else if (!endTime && timeLeft > 0) {
-        // Paused
         const min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
         const sec = String(timeLeft % 60).padStart(2, '0');
         timerDiv.textContent = `${min}:${sec}`;
