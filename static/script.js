@@ -1,3 +1,6 @@
+// Most of the code in this file was developed with the assistance of GitHub Copilot and ChatGPT.
+// Specifically the logic for notes, pomodoro timer syncing with the dashboard
+
 const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 const currentPage = window.location.pathname;
 
@@ -17,7 +20,6 @@ allSideMenu.forEach(item => {
         li.classList.add('active');
     });
 });
-
 
 const menuBar = document.querySelector('#content nav .bx.bx-menu');
 const sidebar = document.getElementById('sidebar');
@@ -115,7 +117,6 @@ function renameNote(event) {
       .then(data => {
         if (data.success) {
           console.log('Note renamed successfully');
-          // Update the note title in the sidebar as well
           const noteItem = document.querySelector(`[data-note-id="${noteId}"]`);
           if (noteItem) {
             noteItem.textContent = newTitle;
@@ -221,13 +222,11 @@ if (timerDisplay && startBtn && pauseBtn && resetBtn && statusText) {
 
   setPomodoroBg();
 
-  // --- SYNC WITH LOCALSTORAGE ON LOAD ---
   function syncFromLocalStorage() {
     const saved = localStorage.getItem('pomodoroState');
     if (saved) {
       const state = JSON.parse(saved);
       if (state.endTime && state.endTime > Date.now()) {
-        // Resume running session
         endTime = state.endTime;
         isWork = state.isWork;
         timeLeft = Math.max(0, Math.round((endTime - Date.now()) / 1000));
@@ -239,7 +238,6 @@ if (timerDisplay && startBtn && pauseBtn && resetBtn && statusText) {
         updateDisplay();
         timer = setInterval(timerTick, 1000);
       } else {
-        // Not running, restore last state
         isWork = state.isWork ?? true;
         timeLeft = state.timeLeft ?? workDuration;
         isRunning = false;
@@ -251,7 +249,6 @@ if (timerDisplay && startBtn && pauseBtn && resetBtn && statusText) {
         setPomodoroBg();
       }
     } else {
-      // No state, reset
       isWork = true;
       timeLeft = workDuration;
       isRunning = false;
@@ -314,7 +311,6 @@ if (timerDisplay && startBtn && pauseBtn && resetBtn && statusText) {
         statusText.textContent = "Back to work! (Click Start)";
       }
       updateDisplay();
-      // Save state after session ends
       localStorage.setItem('pomodoroState', JSON.stringify({
         timeLeft,
         isWork,
@@ -353,10 +349,10 @@ if (timerDisplay && startBtn && pauseBtn && resetBtn && statusText) {
       clearInterval(timer);
       isRunning = false;
       timeLeft = Math.max(0, Math.round((endTime - Date.now()) / 1000));
-      endTime = null; // <-- Add this line
+      endTime = null;
       startBtn.disabled = false;
       pauseBtn.disabled = true;
-      saveState(); // This will now save endTime: null
+      saveState();
       setPomodoroBg('pomodoro-paused');
     }
   }

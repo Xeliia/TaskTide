@@ -1,3 +1,6 @@
+# Some code in this project was developed with the assistance of GitHub Copilot and ChatGPT.
+# Specifically in suggesting logic for the database interaction, and other functionalities
+
 import os
 import random
 
@@ -18,7 +21,6 @@ notes_data = {}
 
 @app.after_request
 def after_request(response):
-    """Ensure responses aren't cached"""
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
@@ -30,7 +32,6 @@ def dashboard():
     user_id = session.get("user_id")
     username = session.get("username")
 
-    # Greeting logic
     from datetime import datetime
     now = datetime.now()
     hour = now.hour
@@ -48,7 +49,6 @@ def dashboard():
     user = conn.execute("SELECT profile_picture FROM users WHERE id = ?", (user_id,)).fetchone()
     profile_picture = user["profile_picture"] if user else "placeholder.png"
 
-    # Notes and To-Do
     notes = conn.execute("SELECT * FROM notes WHERE user_id = ?", (user_id,)).fetchall()
     random_note = random.choice(notes) if notes else None
     notes_count = len(notes)
